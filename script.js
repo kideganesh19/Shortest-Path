@@ -9,7 +9,7 @@ onload = function () {
     const temptext2 = document.getElementById('temptext2');
     const cities = ['Delhi', 'Mumbai', 'Gujarat', 'Goa', 'Kanpur', 'Jammu', 'Hyderabad', 'Bangalore', 'Gangtok', 'Meghalaya'];
 
-    // initialise graph options
+    // initialise graph
     const options = {
         edges: {
             labelHighlightBold: true,
@@ -33,31 +33,27 @@ onload = function () {
         }
     };
 
-    // Initialize your network!
-    // Network for question graph
     const network = new vis.Network(container);
     network.setOptions(options);
-    // Network for result graph
+    // Resulting graph network
     const network2 = new vis.Network(container2);
     network2.setOptions(options);
 
     function createData(){
-        V = Math.floor(Math.random() * 8) + 3; // Ensures V is between 3 and 10
+        V = Math.floor(Math.random() * 8) + 3; // V in 3 and 10
         let nodes = [];
         for(let i=1;i<=V;i++){
             nodes.push({id:i, label: cities[i-1]})
         }
-        // Prepares vis.js style nodes for our data
+        // Using vis.js
         nodes = new vis.DataSet(nodes);
 
-        // Creating a tree like underlying graph structure
         let edges = [];
         for(let i=2;i<=V;i++){
-            let neigh = i - Math.floor(Math.random()*Math.min(i-1,3)+1); // Picks a neighbour from i-3 to i-1
+            let neigh = i - Math.floor(Math.random()*Math.min(i-1,3)+1); 
             edges.push({type: 0, from: i, to: neigh, color: 'orange',label: String(Math.floor(Math.random()*70)+31)});
         }
 
-        // Randomly adding new edges to graph
         // Type of bus is 0
         // Type of plane is 1
         for(let i=1;i<=V/2;){
@@ -71,7 +67,6 @@ onload = function () {
                     n2 = tmp;
                 }
                 // Seeing if an edge between these two vertices already exists
-                // And if it does then of which kind
                 let works = 0;
                 for(let j=0;j<edges.length;j++){
                     if(edges[j]['from']===n1 && edges[j]['to']===n2) {
@@ -82,12 +77,9 @@ onload = function () {
                     }
                 }
 
-                // Adding edges to the graph
-                // If works == 0, you can add bus as well as plane between vertices
-                // If works == 1, you can only add plane between them
                 if(works <= 1) {
                     if (works === 0 && i < V / 4) {
-                        // Adding a bus
+                        // Add bus
                         edges.push({
                             type: 0,
                             from: n1,
@@ -96,7 +88,7 @@ onload = function () {
                             label: String(Math.floor(Math.random() * 70) + 31)
                         });
                     } else {
-                        // Adding a plane
+                        // Add plane
                         edges.push({
                             type: 1,
                             from: n1,
@@ -110,7 +102,6 @@ onload = function () {
             }
         }
 
-        // Setting the new values of global variables
         src = 1;
         dst = V;
         curr_data = {
@@ -120,7 +111,6 @@ onload = function () {
     }
 
     genNew.onclick = function () {
-        // Create new data and display the data
         createData();
         network.setData(curr_data);
         temptext2.innerText = 'Find least time path from '+cities[src-1]+' to '+cities[dst-1];
@@ -131,7 +121,6 @@ onload = function () {
     };
 
     solve.onclick = function () {
-        // Create graph from data and set to display
         temptext.style.display  = "none";
         temptext2.style.display  = "none";
         container2.style.display = "inline";
@@ -229,7 +218,6 @@ onload = function () {
         let new_edges = [];
         if(plane!==0){
             new_edges.push({arrows: { to: { enabled: true}}, from: p1+1, to: p2+1, color: 'green',label: String(plane)});
-            // Using spread operator to push elements of result of pushEdges to new_edges
             new_edges.push(...pushEdges(dist1, p1, false));
             new_edges.push(...pushEdges(dist2, p2, true));
         } else{
